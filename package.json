@@ -43,9 +43,7 @@
     "node": ">=0.12"
   },
   "files": [
-    "dist/lib",
-    "src/lib",
-    "cli.js"
+    "dist/lib"
   ],
   "license": "MIT",
   "repository": "callumlocke/esbox",
