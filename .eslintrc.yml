@@ -1,0 +1,6 @@
+root: true
+parser: babel-eslint
+extends: airbnb/base
+rules:
+  brace-style: [2, stroustrup, {allowSingleLine: false}]
+  no-console: 0
