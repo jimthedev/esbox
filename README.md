@@ -23,8 +23,8 @@ Tool for experimenting with ES2016 JavaScript, with zero setup and full access t
 
 To run `script.js` in a box:
 
-```js
-esbox script.js
+```ssh
+> esbox script.js
 ```
 
 Every time you save the file, the display will clear and your script will run again.
