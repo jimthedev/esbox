@@ -6,7 +6,7 @@
 
 A local sandbox for experimenting with ES2016 JavaScript.
 
-<!-- TODO screenshot -->
+![demo-gif]
 
 - Restarts whenever you save your file
 - Automatically compiles with Babel
@@ -44,7 +44,8 @@ That means you can use any syntax Babel can handle, including async functions.
 
 [MIT](./LICENSE) © [Callum Locke](https://twitter.com/callumlocke)
 
-<!-- badge URLs -->
+[demo-gif]: demo.gif
+
 [npm-url]: https://npmjs.org/package/esbox
 [npm-image]: https://img.shields.io/npm/v/esbox.svg?style=flat-square
 
