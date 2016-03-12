@@ -13,7 +13,7 @@ const red = cc.red;
 const black = cc.black;
 const bgWhite = cc.xtermSupported ? cc.bgXterm(250) : cc.bgWhite;
 const brown = cc.xtermSupported ? cc.xterm(137) : cc.yellow;
-const grey = cc.xtermSupported ? cc.xterm(241) : cc.grey;
+const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
 
 const help = `
   ${bgWhite('                       ')}
