@@ -4,7 +4,7 @@
 
 #### ES2016 in a box
 
-A local sandbox for experimenting with ES2016 JavaScript.
+Tool for experimenting with ES2016 JavaScript, with zero setup and full access to Node.
 
 ![demo-gif]
 
