@@ -8,10 +8,9 @@ A local sandbox for experimenting with ES2016 JavaScript.
 
 ![demo-gif]
 
-- Restarts whenever you save your file
 - Automatically compiles with Babel
+- Restarts whenever you save your script
 - Clears the display on restart
-- Fast restarting
 - Readable stack traces
 
 ## Install
