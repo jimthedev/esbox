@@ -4,9 +4,11 @@
 
 #### ES2016 in a box
 
-Tool for demoing and experimenting with ES2016 JavaScript in your editor and terminal. It has zero config and it automatically compiles and reruns your script when you save. Like a local JSBin but with access to Node APIs.
+Zero-configuration tool for demoing and experimenting with ES2016 JavaScript.
 
 ![demo-gif]
+
+It automatically compiles and reruns your script every time you save. Think  of it like JSBin for your local editor and terminal, with full access to Node APIs and modules.
 
 ## Install
 
@@ -22,13 +24,13 @@ To run `script.js` in a box:
 > esbox script.js
 ```
 
-Every time you save the file, the display will clear and your script will run again.
+Every time you save the file, esbox clears the terminal display will clear and runs your script again.
 
 To see available flags, run `esbox --help`.
 
 ## Automatic Babel compilation
 
-esbox uses Babel's preset for [stage-0](http://babeljs.io/docs/plugins/preset-stage-0/) features, so you can use almost any proposed syntax on the ECMAScript roadmap, including `async/await`.
+You can use almost proposed ECMAScript features that Babel supports ([stage-0](http://babeljs.io/docs/plugins/preset-stage-0/) and above), including async/await.
 
 ---
 

@@ -2,11 +2,13 @@
 
 import 'babel-polyfill';
 import 'source-map-support/register';
-import clearTrace from 'clear-trace';
 import cc from 'cli-color';
+import clearTrace from 'clear-trace';
+import CodeError from 'code-error';
 import fs from 'fs';
 import meow from 'meow';
 import path from 'path';
+import pathExists from 'path-exists';
 import { debounce } from 'lodash';
 
 const red = cc.red;
@@ -28,8 +30,7 @@ const help = `
     --cwd=${grey('DIRECTORY')}   run in a different directory
     --no-watch        only run your script once
     --no-clear        disable clearing the display before each run
-    --version         show esbox version
-`;
+    --version         show esbox version`;
 
 // register babel require hook
 {
@@ -107,10 +108,10 @@ const userScript = (() => {
   let name = path.resolve(cwd, input[0]);
 
   // add .js extension if necessary
-  if (!fs.existsSync(name)) name = `${name}.js`;
+  if (!pathExists.sync(name)) name = `${name}.js`;
 
   // give up if not found
-  if (!fs.existsSync(name)) {
+  if (!pathExists.sync(name)) {
     console.error(red(`Not found: ${input[0]}`));
     process.exit(1);
   }
@@ -125,7 +126,25 @@ const run = debounce(() => {
 
   console.log(brown(`📦  ${path.relative(cwd, userScript)}`));
 
-  require(userScript); // TODO - catch compilation errors and print excerpt
+  try {
+    require(userScript);
+  }
+  catch (error) {
+    if (!error._babel) throw error;
+
+    console.log();
+
+    const [fileName, message] = error.message.split(': ');
+
+    if (fileName !== userScript) console.log(fileName);
+
+    console.log(red(message));
+    console.log(new CodeError(error.message, {
+      line: error.loc.line,
+      column: error.loc.column,
+      contents: fs.readFileSync(userScript),
+    }).ansiExcerpt);
+  }
 }, 10, { maxWait: 1000 });
 
 // start up

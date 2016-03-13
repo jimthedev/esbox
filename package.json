@@ -23,6 +23,7 @@
     "chalk": "^1.1.1",
     "clear-trace": "0.0.7",
     "cli-color": "^1.1.0",
+    "code-error": "0.0.2",
     "lodash": "^4.6.1",
     "meow": "^3.7.0",
     "pretty-hrtime": "^1.0.2",
@@ -32,7 +33,7 @@
   "devDependencies": {
     "ava": "^0.13.0",
     "babel-cli": "^6.6.5",
-    "babel-eslint": "^6.0.0-beta.3",
+    "babel-eslint": "^6.0.0-beta.5",
     "eslint": "~2.2.0",
     "eslint-config-airbnb": "^6.1.0",
     "eslint-plugin-babel": "^3.1.0",
