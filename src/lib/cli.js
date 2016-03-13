@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-import 'babel-polyfill';
-import 'source-map-support/register';
 import cc from 'cli-color';
-import clearTrace from 'clear-trace';
-import CodeError from 'code-error';
-import fs from 'fs';
+import execa from 'execa';
 import meow from 'meow';
 import path from 'path';
 import pathExists from 'path-exists';
+import { clearScreen } from 'ansi-escapes';
 import { debounce } from 'lodash';
+import { tick, cross } from 'figures';
+
+const box = /^darwin/.test(process.platform) ? '📦 ' : 'esbox';
 
 const red = cc.red;
 const black = cc.black;
@@ -31,21 +31,6 @@ const help = `
     --no-watch        only run your script once
     --no-clear        disable clearing the display before each run
     --version         show esbox version`;
-
-// register babel require hook
-{
-  // choose optimal config for the current engine
-  const presets = [require('babel-preset-stage-0')];
-  const nodeVersion = Number(process.versions.node.split('.')[0]);
-  if (nodeVersion > 4) presets.push(require('babel-preset-es2015-node5'));
-  else if (nodeVersion === 4) presets.push(require('babel-preset-es2015-node4'));
-  else presets.push(require('babel-preset-es2015'));
-
-  require('babel-register')({
-    presets,
-    ignore: /node_modules/,
-  });
-}
 
 // get input from command line (and automate --help etc)
 const { input, flags } = meow(
@@ -86,23 +71,6 @@ const cwd = flags.cwd ?
   path.resolve(flags.cwd) :
   process.cwd();
 
-// ensure we're running in the correct directory
-if (cwd !== process.cwd()) process.chdir(cwd);
-
-// make stack traces more readable
-process.on('uncaughtException', error => {
-  console.log(clearTrace(error, { cwd }));
-});
-
-// make sure promise rejections don't get swallowed
-process.on('unhandledRejection', reason => {
-  if (reason && reason instanceof Error) throw reason;
-
-  const error = new Error('Unhandled rejection');
-  error.reason = error;
-  throw error;
-});
-
 // determine the real path to the user's script
 const userScript = (() => {
   let name = path.resolve(cwd, input[0]);
@@ -118,34 +86,38 @@ const userScript = (() => {
   return name;
 })();
 
+
 // function to clear the display and run the user's script
-const run = debounce(() => {
-  if (clear) {
-    process.stdout.write('\u001bc');
-  }
+const run = (() => {
+  const runner = path.resolve(__dirname, 'run.js');
 
-  console.log(brown(`📦  ${path.relative(cwd, userScript)}`));
+  let childProcess;
 
-  try {
-    require(userScript);
-  }
-  catch (error) {
-    if (!error._babel) throw error;
+  return debounce(() => {
+    if (clear) process.stdout.write(clearScreen);
 
-    console.log();
+    console.log(brown(`${box} ${path.relative(process.cwd(), userScript)}\n`));
 
-    const [fileName, message] = error.message.split(': ');
+    if (childProcess) childProcess.kill();
 
-    if (fileName !== userScript) console.log(fileName);
+    childProcess = execa.spawn('node', [
+      runner,
+      '--file', userScript,
+      '--clear', clear,
+    ], { cwd, stdio: 'inherit' });
 
-    console.log(red(message));
-    console.log(new CodeError(error.message, {
-      line: error.loc.line,
-      column: error.loc.column,
-      contents: fs.readFileSync(userScript),
-    }).ansiExcerpt);
-  }
-}, 10, { maxWait: 1000 });
+    childProcess.on('close', code => {
+      if (code !== null && code !== 143) {
+        const symbol = brown(code === 0 ? tick : cross);
+
+        console.log(`\n${symbol}`, brown(`exited with code ${code}`));
+        if (!clear) console.log();
+      }
+    });
+
+    return;
+  }, 10, { maxWait: 1000 });
+})();
 
 // start up
 if (watch) {
