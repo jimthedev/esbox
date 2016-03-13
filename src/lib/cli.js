@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 
+import 'loud-rejection/register';
 import cc from 'cli-color';
 import execa from 'execa';
-import meow from 'meow';
+import minimist from 'minimist';
 import path from 'path';
 import pathExists from 'path-exists';
 import { clearScreen } from 'ansi-escapes';
 import { debounce } from 'lodash';
 import { tick, cross } from 'figures';
+
+process.title = 'esbox';
 
 const box = /^darwin/.test(process.platform) ? '📦 ' : 'esbox';
 
@@ -23,37 +26,33 @@ const help = `
   ${bgWhite(`     ${grey('git.io/esbox')}      `)}
   ${bgWhite('                       ')}
 
-  ${brown('usage')}
+  ${brown('Usage')}
     ${grey('>')} esbox ${grey('FILENAME')}
 
-  ${brown('flags')}
+  ${brown('Options')}
     --cwd=${grey('DIRECTORY')}   run in a different directory
     --no-watch        only run your script once
     --no-clear        disable clearing the display before each run
     --version         show esbox version`;
 
-// get input from command line (and automate --help etc)
-const { input, flags } = meow(
-  {
-    help,
-    description: false,
+// get input from command line
+const { _: input, ...flags } = minimist(process.argv.slice(2), {
+  default: {
+    cwd: null,
+    clear: true,
+    watch: true,
+    help: false,
   },
-  {
-    default: {
-      cwd: null,
-      clear: true,
-      watch: true,
-    },
-    string: ['cwd'],
-    boolean: ['clear', 'watch'],
-    alias: {
-      v: 'version',
-    },
-  }
-);
+  string: ['cwd'],
+  boolean: ['clear', 'watch', 'help'],
+  alias: {
+    v: 'version',
+    h: 'help',
+  },
+});
 
 // if called with no arguments, treat the same as --help
-if (!input.length) {
+if (!input.length || flags.help) {
   console.log(help);
   process.exit(0);
 }
