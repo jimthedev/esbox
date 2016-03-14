@@ -4,13 +4,13 @@
 
 #### ES2016 in a box™
 
-Zero-configuration tool for demoing and experimenting with ES2016 JavaScript.
+Zero-configuration REPL for demoing and experimenting with ES2016 JavaScript.
+
+It automatically compiles and reruns your script every time you save. Think  of it as a JSBin set-up for your local editor and terminal – with full access to Node APIs and modules.
 
 ![demo-gif]
 
-It automatically compiles and reruns your script every time you save. Think  of it as JSBin for your local editor and terminal – with full access to Node APIs and modules.
-
-As well as idle experimenting, esbox can be used in situations like workshops and screencasts, as it provides an easy way to do live code demos in ES2016 without getting bogged down with build systems.
+As well as for idle experimenting, esbox can be used in situations like workshops and screencasts, as it provides an easy way to do live code demos in ES2016 without getting bogged down with build systems.
 
 ## Install
 
