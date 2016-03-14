@@ -51,24 +51,17 @@ const { _: input, ...flags } = minimist(process.argv.slice(2), {
   },
 });
 
-// if called with no arguments, treat the same as --help
-if (!input.length || flags.help) {
+// output help
+if (flags.help || input.length !== 1) {
   console.log(help);
   process.exit(0);
 }
 
-// assert there's only one argument
-if (input.length > 1) {
-  console.log(help);
-  console.error(red('Cannot run esbox with more than one file argument.'));
-  process.exit(1);
-}
-
 // unpack flags
 const { clear, watch } = flags;
-const cwd = flags.cwd ?
-  path.resolve(flags.cwd) :
-  process.cwd();
+const cwd = flags.cwd
+  ? path.resolve(flags.cwd)
+  : process.cwd();
 
 // determine the real path to the user's script
 const userScript = (() => {

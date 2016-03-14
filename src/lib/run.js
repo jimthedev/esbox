@@ -1,11 +1,15 @@
 import 'babel-polyfill';
+import builtins from 'builtin-modules';
 import cc from 'cli-color';
+import excerpt from './excerpt';
 import fs from 'fs';
 import isAbsolute from 'is-absolute';
 import minimist from 'minimist';
+import path from 'path';
+import pathExists from 'path-exists';
 import readableStack from './readableStack';
 import stackTrace from 'stack-trace';
-import excerpt from './excerpt';
+import subdir from 'subdir';
 
 const args = minimist(process.argv.slice(2));
 
@@ -24,11 +28,12 @@ const args = minimist(process.argv.slice(2));
   });
 }
 
-// make stack traces more readable
+// catch global errors and present them nicely
 process.on('uncaughtException', error => {
+  const cwd = process.cwd();
+
   let line;
   let column;
-  // let contents;
   let message;
   let fileName;
 
@@ -48,20 +53,40 @@ process.on('uncaughtException', error => {
     message = error.message;
   }
 
-  if (fileName && isAbsolute(fileName)) {
-    // TODO: scripts run via babel-register seem not to have absolute pathnames
-    // so we don't reach here... need a way to differentiate them from
-    // names of builtins like 'path.js', 'module.js' which appear as relative.
+  const fileRelative = subdir(cwd, fileName) ? path.relative(cwd, fileName) : fileName;
 
-    console.log(`\n${fileName}\n${excerpt({
-      line, column,
-      contents: fs.readFileSync(fileName),
-    })}`);
+  if (error._babel) {
+    console.log(
+      `\nbabel compile error: ${fileRelative}\n` +
+      excerpt({
+        line, column,
+        contents: fs.readFileSync(fileName),
+      }) + '\n' + cc.red(message.trim())
+    );
   }
+  else {
+    // try to determine if it's a local file (as opposed to a builtin)
+    if (
+      isAbsolute(fileName) ||
+      (
+        builtins.indexOf(path.basename(fileName, '.js')) === -1 &&
+        pathExists.sync(path.resolve(cwd, fileName))
+      )
+    ) {
+      console.log(
+        `\nruntime error: ${fileRelative}\n` +
+        excerpt({
+          line, column,
+          contents: fs.readFileSync(fileName),
+        }) + '\n' // + cc.red(message.trim())
+      );
+    }
 
-  console.log(`\n${cc.red(message.trim())}\n`);
-
-  if (!error._babel) console.log(readableStack(error), '\n');
+    console.log(
+      cc.red(message.trim()) + '\n' +
+      readableStack(error) + '\n'
+    );
+  }
 
   process.exit(1);
 });
@@ -75,4 +100,5 @@ process.on('unhandledRejection', reason => {
   throw error;
 });
 
+// run the user's script
 require(args.file);

@@ -1,12 +1,9 @@
-/* eslint-disable prefer-template */
-
 import { isNil } from 'lodash';
 import cc from 'cli-color';
 
 const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
 const red = cc.red;
-
-const maxLines = 8;
+const bgWhite = cc.bgWhite;
 
 function spaces(count) {
   return new Array(count).join(' ');
@@ -19,33 +16,36 @@ export default function excerpt({ contents, line, column }) {
   if (!isNil(contents) && !isNil(line)) {
     const lines = [];
 
-    let l = line + 1;
-    let max = maxLines;
-    const mostDigits = String(line).length + 1;
     const sourceSplit = contents.toString().split('\n');
-    let digitGap;
+    let linesToShow = 8;
+    const maxDigits = String(line).length + 1;
 
-    while (l-- > 1 && max-- > 0) {
-      digitGap = spaces(mostDigits - String(l).length);
-      let lineReport = '  ' + digitGap + grey(l) + grey(' ┃ ');
+    // iterate backwards through the <=8 lines that are in the excerpt
+    let l = Math.min(sourceSplit.length, line + 4) + 1;
+    while (l-- > 1 && linesToShow-- > 0) {
+      const digitGap = spaces(maxDigits - String(l).length);
 
-      if (l === line) lineReport += sourceSplit[l - 1]; // the error line: bright
-      else lineReport += grey(sourceSplit[l - 1]); // non-error line: dim
+      const numbering = '  ' + digitGap + l + ' ┃ ';
+      let code = sourceSplit[l - 1];
+      let text;
 
-      lines.unshift(lineReport);
+      if (l === line) {
+        if (column) {
+          code = (
+            code.substring(0, column) +
+            bgWhite(red(code.charAt(column))) +
+            code.substring(column + 1)
+          );
+        }
+
+        text = numbering + code;
+      }
+      else text = grey(numbering + code);
+
+      lines.unshift(text);
     }
 
     report.push(lines.join('\n'));
-
-    // add a line to show column of error
-    if (!isNil(column)) {
-      digitGap = spaces(mostDigits);
-      report.push(
-        digitGap + spaces(column + 5) +
-        red('↑')
-      );
-    }
-    else report.push('');
   }
 
   // put it together
