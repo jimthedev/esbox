@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import 'loud-rejection/register';
-
 import cc from 'cli-color';
 import execa from 'execa';
 import minimist from 'minimist';
@@ -13,6 +11,8 @@ import { clearScreen } from 'ansi-escapes';
 import { debounce } from 'lodash';
 import { tick, cross } from 'figures';
 
+const isMac = /^darwin/.test(process.platform);
+
 process.title = 'esbox';
 
 updateNotifier({ pkg }).notify();
@@ -23,11 +23,9 @@ const bgWhite = cc.xtermSupported ? cc.bgXterm(250) : cc.bgWhite;
 const brown = cc.xtermSupported ? cc.xterm(137) : cc.yellow;
 const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
 
-const box = /^darwin/.test(process.platform) ? '📦 ' : 'esbox';
-
 const help = `
   ${bgWhite('                       ')}
-  ${bgWhite(`  📦  ${black('ES2016 in a box')}   `)}
+  ${bgWhite(`  ${isMac ? '📦' : ''}  ${black('ES2016 in a box')}   `)}
   ${bgWhite(`     ${grey('git.io/esbox')}      `)}
   ${bgWhite('                       ')}
 
@@ -47,14 +45,21 @@ const { _: input, ...flags } = minimist(process.argv.slice(2), {
     clear: true,
     watch: true,
     help: false,
+    version: false,
   },
   string: ['cwd'],
-  boolean: ['clear', 'watch', 'help'],
+  boolean: ['clear', 'watch', 'help', 'version'],
   alias: {
     v: 'version',
     h: 'help',
   },
 });
+
+// output version
+if (flags.version) {
+  console.log(pkg.version);
+  process.exit(0);
+}
 
 // output help
 if (flags.help || input.length !== 1) {
@@ -93,7 +98,7 @@ const run = (() => {
   return debounce(() => {
     if (clear) process.stdout.write(clearScreen);
 
-    console.log(brown(`${box} ${path.relative(process.cwd(), userScript)}\n`));
+    console.log(brown(`${isMac ? '📦 ' : 'esbox'} ${path.relative(process.cwd(), userScript)}\n`));
 
     if (childProcess) childProcess.kill();
 
@@ -105,9 +110,8 @@ const run = (() => {
 
     childProcess.on('close', code => {
       if (code !== null && code !== 143) {
-        const symbol = brown(code === 0 ? tick : cross);
+        console.log(brown(`\n${(code === 0 ? tick : cross)} exited with code ${code}`));
 
-        console.log(`\n${symbol}`, brown(`exited with code ${code}`));
         if (!clear) console.log();
       }
     });

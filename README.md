@@ -4,13 +4,13 @@
 
 #### ES2016 in a box™
 
-Zero-configuration REPL for demoing and experimenting with ES2016 JavaScript.
+Zero-configuration REPL for experimenting with ES2016 JavaScript.
 
-It automatically compiles and reruns your script every time you save. Think  of it as a JSBin set-up for your local editor and terminal – with full access to Node APIs and modules.
+It automatically compiles and re-runs your script every time you save. Think  of it as a JSBin-like setup for your local editor and terminal – with full access to Node APIs and modules.
 
 ![demo-gif]
 
-As well as for idle experimenting, esbox can be used in situations like workshops and screencasts, as it provides an easy way to do live code demos in ES2016 without getting bogged down with build systems.
+As well as for experimenting, esbox may be useful in situations like workshops and screencasts – it makes it easy to do live code demos in ES2016 without getting bogged down in build systems.
 
 ## Install
 
@@ -33,6 +33,35 @@ For more options, see `esbox --help`.
 ## Automatic Babel compilation
 
 You can use any proposed ECMAScript features that Babel supports ([stage-0](http://babeljs.io/docs/plugins/preset-stage-0/) and above), including async/await, destructuring, rest/spread, etc.
+
+## Magic imports
+
+For a number of popular libraries, you can just `import` them without the need to install them first.
+
+This includes lodash, bluebird, chalk, chai, express, request – and anything listed under `dependencies` in esbox's own [package.json](./package.json).
+
+This is made possible by rewiring `require()` to use esbox's own node_modules folder as an extra possible module source. (Your own locally installed modules still take precedence if found.)
+
+For example, a script like this just works in esbox:
+
+```js
+import cheerio from 'cheerio';
+import fetch from 'isomorphic-fetch';
+import { cyan } from 'chalk';
+
+(async () => {
+  const result = await fetch('https://www.nytimes.com');
+  console.assert(result.ok);
+
+  const $ = cheerio.load(await result.text());
+
+  console.log('The New York Times headlines:');
+
+  $('.story-heading').each((i, element) => {
+    console.log(' ', cyan($(element).text().trim()));
+  });
+})();
+```
 
 ---
 

@@ -1,5 +1,4 @@
 import 'babel-polyfill';
-import 'loud-rejection/register';
 
 import builtins from 'builtin-modules';
 import cc from 'cli-color';
@@ -12,8 +11,9 @@ import pathExists from 'path-exists';
 import readableStack from './readableStack';
 import stackTrace from 'stack-trace';
 import subdir from 'subdir';
+import { Module } from 'module';
 
-const args = minimist(process.argv.slice(2));
+const flags = minimist(process.argv.slice(2));
 
 // register babel require hook
 {
@@ -28,6 +28,19 @@ const args = minimist(process.argv.slice(2));
     presets,
     ignore: /node_modules/,
   });
+}
+
+// make magic imports work
+{
+  const oldNodeModulePaths = Module._nodeModulePaths;
+  const esboxRoot = path.resolve(__dirname, '..', '..');
+  const esboxNodeModules = path.join(esboxRoot, 'node_modules');
+
+  Module._nodeModulePaths = function _modifiedNodeModulePaths(fromWhere, ...args) {
+    const paths = oldNodeModulePaths.call(this, fromWhere, ...args);
+    paths.push(esboxNodeModules);
+    return paths;
+  };
 }
 
 // catch global errors and present them nicely
@@ -55,7 +68,10 @@ process.on('uncaughtException', error => {
     message = error.message;
   }
 
-  const fileRelative = subdir(cwd, fileName) ? path.relative(cwd, fileName) : fileName;
+  const fileRelative = (fileName && subdir(cwd, fileName))
+    ? path.relative(cwd, fileName)
+    : (fileName || '[null]')
+  ;
 
   if (error._babel) {
     console.log(
@@ -69,10 +85,11 @@ process.on('uncaughtException', error => {
   else {
     // try to determine if it's a local file (as opposed to a builtin)
     if (
-      isAbsolute(fileName) ||
-      (
-        builtins.indexOf(path.basename(fileName, '.js')) === -1 &&
-        pathExists.sync(path.resolve(cwd, fileName))
+      fileName && (
+        isAbsolute(fileName) || (
+          builtins.indexOf(path.basename(fileName, '.js')) === -1 &&
+          pathExists.sync(path.resolve(cwd, fileName))
+        )
       )
     ) {
       console.log(
@@ -80,7 +97,7 @@ process.on('uncaughtException', error => {
         excerpt({
           line, column,
           contents: fs.readFileSync(fileName),
-        }) + '\n' // + cc.red(message.trim())
+        }) + '\n'
       );
     }
 
@@ -103,4 +120,4 @@ process.on('unhandledRejection', reason => {
 });
 
 // run the user's script
-require(args.file);
+require(flags.file);
