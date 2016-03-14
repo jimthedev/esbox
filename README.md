@@ -1,8 +1,8 @@
-# esbox
+# 🎬 esbox
 
 [![NPM version][npm-image]][npm-url] [![Linux Build Status][travis-image]][travis-url] [![Windows Build Status][appveyor-image]][appveyor-url] [![Dependency Status][depstat-image]][depstat-url]
 
-#### ES2016 in a box
+#### ES2016 in a box™
 
 Zero-configuration tool for demoing and experimenting with ES2016 JavaScript.
 
@@ -10,7 +10,7 @@ Zero-configuration tool for demoing and experimenting with ES2016 JavaScript.
 
 It automatically compiles and reruns your script every time you save. Think  of it as JSBin for your local editor and terminal – with full access to Node APIs and modules.
 
-esbox is intended for use in workshops and screencasts, as an easy way to run code demos in ES2016 without getting bogged down with build systems.
+As well as idle experimenting, esbox can be used in situations like workshops and screencasts, as it provides an easy way to do live code demos in ES2016 without getting bogged down with build systems.
 
 ## Install
 
@@ -22,11 +22,11 @@ esbox is intended for use in workshops and screencasts, as an easy way to run co
 
 To run `script.js` in a box:
 
-```ssh
+```sh
 > esbox script.js
 ```
 
-Every time you save the file, esbox clears the terminal display and runs your script again.
+Every time you save the file, esbox clears the terminal display and runs your script again. Any uncaught errors get pretty-printed for easy debugging.
 
 For more options, see `esbox --help`.
 
