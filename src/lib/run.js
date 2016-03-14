@@ -57,7 +57,7 @@ process.on('uncaughtException', error => {
 
   if (error._babel) {
     console.log(
-      `\nbabel compile error: ${fileRelative}\n` +
+      `\nCompile error: ${fileRelative}\n` +
       excerpt({
         line, column,
         contents: fs.readFileSync(fileName),
@@ -74,7 +74,7 @@ process.on('uncaughtException', error => {
       )
     ) {
       console.log(
-        `\nruntime error: ${fileRelative}\n` +
+        `\nRuntime error: ${fileRelative}\n` +
         excerpt({
           line, column,
           contents: fs.readFileSync(fileName),
