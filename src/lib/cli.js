@@ -1,24 +1,29 @@
 #!/usr/bin/env node
 
 import 'loud-rejection/register';
+
 import cc from 'cli-color';
 import execa from 'execa';
 import minimist from 'minimist';
 import path from 'path';
 import pathExists from 'path-exists';
+import pkg from '../../package.json';
+import updateNotifier from 'update-notifier';
 import { clearScreen } from 'ansi-escapes';
 import { debounce } from 'lodash';
 import { tick, cross } from 'figures';
 
 process.title = 'esbox';
 
-const box = /^darwin/.test(process.platform) ? '📦 ' : 'esbox';
+updateNotifier({ pkg }).notify();
 
 const red = cc.red;
 const black = cc.black;
 const bgWhite = cc.xtermSupported ? cc.bgXterm(250) : cc.bgWhite;
 const brown = cc.xtermSupported ? cc.xterm(137) : cc.yellow;
 const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
+
+const box = /^darwin/.test(process.platform) ? '📦 ' : 'esbox';
 
 const help = `
   ${bgWhite('                       ')}

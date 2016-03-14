@@ -1,4 +1,6 @@
 import 'babel-polyfill';
+import 'loud-rejection/register';
+
 import builtins from 'builtin-modules';
 import cc from 'cli-color';
 import excerpt from './excerpt';

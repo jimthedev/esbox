@@ -1,5 +1,5 @@
-import { isNil } from 'lodash';
 import cc from 'cli-color';
+import { isNil } from 'lodash';
 
 const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
 const red = cc.red;

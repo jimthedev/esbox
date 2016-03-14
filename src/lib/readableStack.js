@@ -1,11 +1,11 @@
 import builtins from 'builtin-modules';
-import pathExists from 'path-exists';
-import { isString } from 'lodash';
-import stackTrace from 'stack-trace';
-import isAbsolute from 'is-absolute';
-import subdir from 'subdir';
 import cc from 'cli-color';
+import isAbsolute from 'is-absolute';
 import path from 'path';
+import pathExists from 'path-exists';
+import stackTrace from 'stack-trace';
+import subdir from 'subdir';
+import { isString } from 'lodash';
 
 const grey = cc.xtermSupported ? cc.xterm(241) : cc.blackBright;
 
