@@ -1,5 +1,5 @@
-/* eslint-disable prefer-template */
-
+import builtins from 'builtin-modules';
+import pathExists from 'path-exists';
 import { isString } from 'lodash';
 import stackTrace from 'stack-trace';
 import isAbsolute from 'is-absolute';
@@ -22,11 +22,16 @@ export default function readableStack(error, options = { cwd: process.cwd() }) {
 
     if (isString(fileName)) {
       const absolute = isAbsolute(fileName);
+      const resolvedFileName = path.resolve(cwd, fileName);
 
       if (
-        absolute &&
         subdir(cwd, fileName) &&
-        !subdir(path.join(cwd, 'node_modules'), fileName)) {
+        !subdir(path.join(cwd, 'node_modules'), resolvedFileName) &&
+        (absolute || (
+          builtins.indexOf(path.basename(fileName, '.js')) === -1 &&
+          pathExists.sync(resolvedFileName)
+        ))
+      ) {
         // absolute and within CWD (but not in node_modules folder)
         // - highlight this line
         return (
