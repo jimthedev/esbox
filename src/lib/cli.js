@@ -36,7 +36,8 @@ const help = `
     --cwd=${grey('DIRECTORY')}   run in a different directory
     --no-watch        only run your script once
     --no-clear        disable clearing the display before each run
-    --version         show esbox version`;
+    --version         show esbox version
+    --poll            poll file system when watching files`;
 
 // get input from command line
 const { _: input, ...flags } = minimist(process.argv.slice(2), {
@@ -46,9 +47,10 @@ const { _: input, ...flags } = minimist(process.argv.slice(2), {
     watch: true,
     help: false,
     version: false,
+    poll: false,
   },
   string: ['cwd'],
-  boolean: ['clear', 'watch', 'help', 'version'],
+  boolean: ['clear', 'watch', 'help', 'version', 'poll'],
   alias: {
     v: 'version',
     h: 'help',
@@ -132,7 +134,7 @@ if (watch) {
     run();
   };
 
-  const watcher = sane(cwd);
+  const watcher = sane(cwd, { poll: flags.poll });
 
   watcher.on('add', onFileEvent);
   watcher.on('change', onFileEvent);
