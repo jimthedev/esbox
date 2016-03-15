@@ -1,16 +1,16 @@
-# 🎬 esbox
+# 📦 esbox
 
 [![NPM version][npm-image]][npm-url] [![Linux Build Status][travis-image]][travis-url] [![Windows Build Status][appveyor-image]][appveyor-url] [![Dependency Status][depstat-image]][depstat-url]
 
-#### ES2016 in a box™
+#### ES.next in a box™
 
-Zero-configuration REPL for experimenting with ES2016 JavaScript.
+Zero-config REPL for experimenting with next-generation JavaScript.
 
 It automatically compiles and re-runs your script every time you save. Think  of it as a JSBin-like setup for your local editor and terminal – with full access to Node APIs and modules.
 
 ![demo-gif]
 
-As well as for experimenting, esbox may be useful in situations like workshops and screencasts – it makes it easy to do live code demos in ES2016 without getting bogged down in build systems.
+As well as for experimenting, esbox may be useful in situations like workshops and screencasts – it makes it easy to do live code demos in ES2016 and beyond, without getting bogged down in build systems.
 
 ## Install
 
@@ -38,7 +38,7 @@ You can use any proposed ECMAScript features that Babel supports ([stage-0](http
 
 For a number of popular libraries, you can just `import` them without the need to install them first.
 
-This includes lodash, bluebird, chalk, chai, express, request – and anything listed under `dependencies` in esbox's own [package.json](./package.json).
+This includes lodash, bluebird, chalk, chai, express, request – and anything else listed under `dependencies` in esbox's own [package.json](./package.json).
 
 This is made possible by rewiring `require()` to use esbox's own node_modules folder as an extra possible module source. (Your own locally installed modules still take precedence if found.)
 
