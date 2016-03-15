@@ -18,7 +18,7 @@ const flags = minimist(process.argv.slice(2));
 // register babel require hook
 {
   // choose optimal config for the current engine
-  const presets = [require('babel-preset-stage-0')];
+  const presets = [require('babel-preset-stage-0'), require('babel-preset-react')];
   const nodeVersion = Number(process.versions.node.split('.')[0]);
   if (nodeVersion > 4) presets.push(require('babel-preset-es2015-node5'));
   else if (nodeVersion === 4) presets.push(require('babel-preset-es2015-node4'));
