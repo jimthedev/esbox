@@ -5,3 +5,5 @@ rules:
   brace-style: [2, stroustrup, {allowSingleLine: false}]
   no-console: 0
   prefer-template: 0
+  global-require: 0
+  no-underscore-dangle: 0
